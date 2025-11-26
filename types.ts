@@ -1,26 +1,36 @@
-export type ActivityType = 'travel' | 'food' | 'activity' | 'hotel' | 'rest';
+import { LucideIcon } from 'lucide-react';
 
-export interface Activity {
-  id: string;
-  time: string;
-  title: string;
-  description: string;
-  location?: string;
-  type: ActivityType;
-  options?: Activity[]; // For "Option A vs Option B" scenarios
-  tips?: string[];
+export enum ActivityType {
+  Drive = 'Drive',
+  Food = 'Food',
+  Activity = 'Activity',
+  Hotel = 'Hotel',
+  Rest = 'Rest',
 }
 
-export interface DaySchedule {
-  dayId: number;
+export interface Activity {
+  time: string;
+  title: string;
+  description?: string;
+  type: ActivityType;
+  location?: string;
+  tips?: string[];
+  options?: {
+    title: string;
+    description: string;
+  }[];
+}
+
+export interface DayPlan {
+  id: number;
   date: string;
   weekday: string;
   route: string;
-  highlight: string;
+  theme: string;
   activities: Activity[];
 }
 
-export interface ChatMessage {
-  role: 'user' | 'model';
-  text: string;
+export interface DeploymentStep {
+  title: string;
+  content: string;
 }
