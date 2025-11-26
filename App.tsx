@@ -1,7 +1,12 @@
+
 import React, { useState } from 'react';
-import { MapPin, Coffee, Car, Moon, Camera, Info, ExternalLink, ChevronDown, ChevronUp, CheckCircle, Smartphone } from 'lucide-react';
+import { 
+  MapPin, Coffee, Car, Moon, Camera, Info, ExternalLink, 
+  ChevronDown, ChevronUp, CheckCircle, Smartphone, Navigation,
+  Sun, Cloud, CloudRain, Wind
+} from 'lucide-react';
 import { TRIP_DATA, DEPLOYMENT_STEPS } from './constants';
-import { Activity, ActivityType, DayPlan } from './types';
+import { Activity, ActivityType, DayPlan, WeatherInfo } from './types';
 
 const ActivityIcon = ({ type }: { type: ActivityType }) => {
   switch (type) {
@@ -20,7 +25,28 @@ const ActivityIcon = ({ type }: { type: ActivityType }) => {
   }
 };
 
+const WeatherIcon = ({ type }: { type: WeatherInfo['type'] }) => {
+  switch (type) {
+    case 'sunny':
+      return <Sun className="w-6 h-6 text-yellow-400" />;
+    case 'cloudy':
+      return <Cloud className="w-6 h-6 text-gray-200" />;
+    case 'rain':
+      return <CloudRain className="w-6 h-6 text-blue-300" />;
+    case 'windy':
+      return <Wind className="w-6 h-6 text-gray-300" />;
+    default:
+      return <Sun className="w-6 h-6 text-yellow-400" />;
+  }
+};
+
 const ActivityItem: React.FC<{ activity: Activity; isLast: boolean }> = ({ activity, isLast }) => {
+  const openMap = (location: string) => {
+    // Force open Apple Maps with the specific query
+    const encodedLocation = encodeURIComponent(`台灣 ${location}`);
+    window.open(`http://maps.apple.com/?q=${encodedLocation}`, '_blank');
+  };
+
   return (
     <div className="relative pl-8 pb-8">
       {!isLast && (
@@ -35,7 +61,20 @@ const ActivityItem: React.FC<{ activity: Activity; isLast: boolean }> = ({ activ
           {activity.time}
         </span>
         <div className="flex-1 bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-          <h4 className="font-bold text-gray-900 text-lg mb-1">{activity.title}</h4>
+          <div className="flex justify-between items-start gap-2">
+            <h4 className="font-bold text-gray-900 text-lg mb-1">{activity.title}</h4>
+            
+            {activity.location && (
+              <button 
+                onClick={() => openMap(activity.location!)}
+                className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold hover:bg-blue-100 transition-colors active:scale-95"
+              >
+                <Navigation className="w-3 h-3" />
+                導航
+              </button>
+            )}
+          </div>
+
           {activity.location && (
             <div className="flex items-center text-xs text-gray-500 mb-2">
               <MapPin className="w-3 h-3 mr-1" />
@@ -101,7 +140,18 @@ const DayCard: React.FC<{ day: DayPlan }> = ({ day }) => {
                 </p>
               </div>
             </div>
-            {isOpen ? <ChevronUp className="text-white" /> : <ChevronDown className="text-gray-400" />}
+            
+            <div className="flex items-center gap-3">
+              {/* Weather Info */}
+              <div className={`flex flex-col items-end text-xs ${isOpen ? 'text-blue-100' : 'text-gray-500'}`}>
+                <div className="flex items-center gap-1">
+                  <WeatherIcon type={day.weather.type} />
+                  <span className="font-bold text-sm">{day.weather.temp}</span>
+                </div>
+                <span>{day.weather.desc}</span>
+              </div>
+              {isOpen ? <ChevronUp className="text-white" /> : <ChevronDown className="text-gray-400" />}
+            </div>
           </div>
           
           {isOpen && (
