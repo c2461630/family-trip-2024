@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG } from './constants';
 import { Activity, ActivityType, DayPlan, WeatherInfo, Expense } from './types';
+
 // @ts-ignore
 import { initializeApp } from 'firebase/app';
 // @ts-ignore
@@ -252,7 +253,7 @@ const ExpenseTracker = () => {
 
         // Subscribe to real-time updates
         const q = query(collection(firestore, "expenses"), orderBy("dateTimestamp", "desc"));
-        // IMPORTANT: Added ': any' to snapshot to fix TypeScript build error
+        // IMPORTANT: Explicitly typed snapshot as any to avoid TS errors in strict mode
         const unsubscribe = onSnapshot(q, (snapshot: any) => {
           const loadedExpenses: Expense[] = snapshot.docs.map((doc: any) => ({
             id: doc.id,
