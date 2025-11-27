@@ -2,18 +2,15 @@
 import { DayPlan, ActivityType, DeploymentStep } from './types';
 
 // ==========================================
-// 🔥 FIREBASE 設定區 (請填入你的設定)
+// 🔥 FIREBASE 設定區
 // ==========================================
-// 1. 去 console.firebase.google.com 建立專案
-// 2. 建立 Web App 並複製 config
-// 3. 填入下方引號中 (如果是空的，APP 會自動使用「手機本機儲存」模式)
 export const FIREBASE_CONFIG = {
-  apiKey: "",             // 例如: "AIzaSyD..."
-  authDomain: "",         // 例如: "family-trip.firebaseapp.com"
-  projectId: "",          // 例如: "family-trip-2024"
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCHpfzayKD9FdLIpvN07wHzbgPDZ7u-RrQ",
+  authDomain: "familytrip2025-1e440.firebaseapp.com",
+  projectId: "familytrip2025-1e440",
+  storageBucket: "familytrip2025-1e440.firebasestorage.app",
+  messagingSenderId: "68447315766",
+  appId: "1:68447315766:web:789f6be9523beb1820b597"
 };
 // ==========================================
 
