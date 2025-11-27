@@ -1,5 +1,5 @@
 
-import { DayPlan, ActivityType, DeploymentStep } from './types';
+import { DayPlan, ActivityType, DeploymentStep, Accommodation } from './types';
 
 // ==========================================
 // 🔥 FIREBASE 設定區
@@ -244,7 +244,42 @@ export const TRIP_DATA: DayPlan[] = [
   }
 ];
 
+export const ACCOMMODATION_DATA: Accommodation[] = [
+  { 
+    id: 1, 
+    date: "12/10 (週三)", 
+    name: "宜蘭住宿 (待定)", 
+    location: "宜蘭縣礁溪鄉", 
+    note: "建議選擇礁溪溫泉區" 
+  },
+  { 
+    id: 2, 
+    date: "12/11 (週四)", 
+    name: "花蓮市區住宿 (待定)", 
+    location: "花蓮縣花蓮市", 
+    note: "建議靠近東大門夜市" 
+  },
+  { 
+    id: 3, 
+    date: "12/12 (週五)", 
+    name: "花蓮市區住宿 (續住)", 
+    location: "花蓮縣花蓮市", 
+    note: "同前一晚" 
+  },
+  { 
+    id: 4, 
+    date: "12/13 (週六)", 
+    name: "台東池上住宿 (待定)", 
+    location: "台東縣池上鄉", 
+    note: "建議靠近伯朗大道或火車站" 
+  },
+];
+
 export const DEPLOYMENT_STEPS: DeploymentStep[] = [
+  {
+    title: "⚠️ 重要提醒：Vercel 限制",
+    content: "Vercel 免費版每天最多部署 100 次。如果更新後手機沒看到新內容，可能是達到上限了，請等待隔天重置。"
+  },
   {
     title: "1. 註冊 Vercel 帳號",
     content: "前往 vercel.com，使用 GitHub 登入，這樣最方便連結。"
