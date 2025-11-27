@@ -50,11 +50,3 @@ export interface Expense {
   date: string;
   dateTimestamp?: number; // 新增此欄位以支援排序
 }
-
-// ==========================================
-// 🚨 CRITICAL FIX FOR VERCEL BUILD 🚨
-// 告訴 TypeScript 編譯器忽略這些模組的檢查
-// 因為我們是透過 index.html 的 importmap (CDN) 載入的
-// ==========================================
-declare module 'firebase/app';
-declare module 'firebase/firestore';
