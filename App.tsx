@@ -517,43 +517,52 @@ const ExpenseTracker = () => {
               {editingId === expense.id ? (
                 // --- Edit Mode ---
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center text-blue-800 font-bold text-sm">
-                    <span>編輯項目</span>
-                    <button onClick={cancelEdit} className="text-gray-400 hover:text-gray-600">
-                      <X className="w-4 h-4" />
+                  <div className="flex justify-between items-center text-blue-800 font-bold text-sm bg-blue-50 p-2 rounded">
+                    <span>✏️ 正在編輯此項目</span>
+                    <button onClick={cancelEdit} className="text-gray-500 hover:text-gray-700">
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2">
-                    <input 
-                      type="text" 
-                      value={editForm.title} 
-                      onChange={e => setEditForm({...editForm, title: e.target.value})}
-                      className="col-span-2 p-2 border border-blue-200 rounded text-sm focus:outline-none focus:border-blue-400"
-                      placeholder="項目名稱"
-                    />
-                    <input 
-                      type="number" 
-                      value={editForm.amount} 
-                      onChange={e => setEditForm({...editForm, amount: Number(e.target.value)})}
-                      className="p-2 border border-blue-200 rounded text-sm focus:outline-none focus:border-blue-400"
-                      placeholder="金額"
-                    />
-                    <select 
-                      value={editForm.payer} 
-                      onChange={e => setEditForm({...editForm, payer: e.target.value})}
-                      className="p-2 border border-blue-200 rounded text-sm bg-white focus:outline-none focus:border-blue-400"
-                    >
-                       <option value="爸爸">爸爸</option>
-                       <option value="媽媽">媽媽</option>
-                       <option value="公費">公費</option>
-                    </select>
+                    <div className="col-span-2">
+                      <label className="text-xs text-gray-500 ml-1">項目名稱</label>
+                      <input 
+                        type="text" 
+                        value={editForm.title} 
+                        onChange={e => setEditForm({...editForm, title: e.target.value})}
+                        className="w-full p-2 border border-blue-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                        placeholder="項目名稱"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 ml-1">金額</label>
+                      <input 
+                        type="number" 
+                        value={editForm.amount} 
+                        onChange={e => setEditForm({...editForm, amount: Number(e.target.value)})}
+                        className="w-full p-2 border border-blue-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                        placeholder="金額"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 ml-1">付款人</label>
+                      <select 
+                        value={editForm.payer} 
+                        onChange={e => setEditForm({...editForm, payer: e.target.value})}
+                        className="w-full p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500"
+                      >
+                         <option value="爸爸">爸爸</option>
+                         <option value="媽媽">媽媽</option>
+                         <option value="公費">公費</option>
+                      </select>
+                    </div>
                     <div className="col-span-2 flex gap-1 overflow-x-auto pb-1 pt-1">
                       {['food', 'transport', 'stay', 'play', 'other'].map(cat => (
                         <button
                           key={cat}
                           onClick={() => setEditForm({...editForm, category: cat as any})}
-                          className={`px-2 py-1 rounded-md text-xs whitespace-nowrap border ${
+                          className={`px-3 py-1.5 rounded-md text-xs whitespace-nowrap border font-medium ${
                             editForm.category === cat 
                               ? 'bg-blue-600 text-white border-blue-600' 
                               : 'bg-white text-gray-500 border-gray-200'
@@ -565,19 +574,18 @@ const ExpenseTracker = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-1">
+                  <div className="flex gap-2 pt-2 border-t border-gray-100">
                      <button 
                       onClick={() => saveEdit(expense.id)}
-                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center justify-center gap-1"
+                      className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-green-700 flex items-center justify-center gap-1 shadow-sm active:scale-[0.98]"
                     >
-                      <Save className="w-4 h-4" /> 儲存修改
+                      <Save className="w-4 h-4" /> 儲存
                     </button>
-                    <button 
-                      onClick={() => removeExpense(expense.id)}
-                      className="px-3 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 flex items-center justify-center"
-                      title="刪除"
+                     <button 
+                      onClick={cancelEdit}
+                      className="flex-1 bg-gray-100 text-gray-600 py-2.5 rounded-lg text-sm font-bold hover:bg-gray-200 flex items-center justify-center gap-1 shadow-sm active:scale-[0.98]"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <X className="w-4 h-4" /> 取消
                     </button>
                   </div>
                 </div>
@@ -601,16 +609,24 @@ const ExpenseTracker = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-end gap-1">
                     <span className="font-bold text-gray-900 font-mono text-lg">
                       ${expense.amount.toLocaleString()}
                     </span>
-                    <button 
-                      onClick={() => startEdit(expense)}
-                      className="text-gray-300 hover:text-blue-500 p-1"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => startEdit(expense)}
+                        className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold hover:bg-blue-100 border border-blue-100 flex items-center gap-1"
+                      >
+                        <Pencil className="w-3 h-3" /> 編輯
+                      </button>
+                      <button 
+                        onClick={() => removeExpense(expense.id)}
+                        className="px-2 py-1 bg-red-50 text-red-600 rounded text-xs font-bold hover:bg-red-100 border border-red-100 flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" /> 刪除
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
