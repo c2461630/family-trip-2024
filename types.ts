@@ -50,3 +50,11 @@ export interface Expense {
   date: string;
   dateTimestamp?: number; // 用於排序
 }
+
+export interface Accommodation {
+  id: number;
+  date: string;
+  name: string;
+  location: string;
+  note?: string;
+}
