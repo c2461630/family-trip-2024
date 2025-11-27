@@ -4,10 +4,10 @@ import {
   MapPin, Coffee, Car, Moon, Camera, Info, ExternalLink, 
   ChevronDown, ChevronUp, CheckCircle, Smartphone, Navigation,
   Sun, Cloud, CloudRain, Wind, Plus, Trash2, Wallet, PieChart,
-  CloudLightning, WifiOff, Pencil, Save, X
+  CloudLightning, WifiOff, Pencil, Save, X, BedDouble
 } from 'lucide-react';
-import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG } from './constants';
-import { Activity, ActivityType, DayPlan, WeatherInfo, Expense } from './types';
+import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG, ACCOMMODATION_DATA } from './constants';
+import { Activity, ActivityType, DayPlan, WeatherInfo, Expense, Accommodation } from './types';
 
 // We will load these dynamically to avoid build errors
 // import { initializeApp } from 'firebase/app';
@@ -184,6 +184,65 @@ const DayCard: React.FC<{ day: DayPlan }> = ({ day }) => {
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+// --- Accommodation List Component ---
+
+const AccommodationList = () => {
+  const openMap = (location: string) => {
+    const encodedLocation = encodeURIComponent(`台灣 ${location}`);
+    window.open(`http://maps.apple.com/?q=${encodedLocation}`, '_blank');
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+        <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+          <BedDouble className="w-6 h-6" />
+          住宿資訊
+        </h2>
+        <p className="text-indigo-50 opacity-90">
+          四個晚上的落腳處，點擊導航可直接前往。
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {ACCOMMODATION_DATA.map((item) => (
+          <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center">
+                  <span className="text-indigo-700 font-bold text-xs">{item.date.split(' ')[0]}</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-lg">{item.name}</h3>
+                  <p className="text-sm text-gray-500">{item.date}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => openMap(item.location)}
+                className="flex items-center gap-1 px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors active:scale-95"
+              >
+                <Navigation className="w-4 h-4" />
+                導航
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <span>{item.location}</span>
+            </div>
+            
+            {item.note && (
+              <div className="text-xs text-indigo-600 font-medium px-1">
+                💡 {item.note}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -641,7 +700,7 @@ const ExpenseTracker = () => {
 // --- Main App Component ---
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'itinerary' | 'expense' | 'deploy'>('itinerary');
+  const [activeTab, setActiveTab] = useState<'itinerary' | 'accommodation' | 'expense' | 'deploy'>('itinerary');
 
   return (
     <div className="min-h-screen pb-12 max-w-md mx-auto sm:max-w-2xl bg-gray-50">
@@ -649,7 +708,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex justify-between items-start mb-3">
           <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-            Family Trip 2024
+            Family Trip 2024 v2.0
           </h1>
           <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
             5 Days
@@ -657,10 +716,10 @@ export default function App() {
         </div>
         
         {/* Navigation Tabs */}
-        <div className="flex p-1 bg-gray-100 rounded-lg">
+        <div className="flex p-1 bg-gray-100 rounded-lg overflow-x-auto">
           <button
             onClick={() => setActiveTab('itinerary')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
               activeTab === 'itinerary' 
                 ? 'bg-white text-gray-900 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
@@ -669,8 +728,18 @@ export default function App() {
             行程
           </button>
           <button
+            onClick={() => setActiveTab('accommodation')}
+            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+              activeTab === 'accommodation' 
+                ? 'bg-white text-indigo-700 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            住宿
+          </button>
+          <button
             onClick={() => setActiveTab('expense')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
               activeTab === 'expense' 
                 ? 'bg-white text-emerald-700 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
@@ -680,7 +749,7 @@ export default function App() {
           </button>
           <button
             onClick={() => setActiveTab('deploy')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
               activeTab === 'deploy' 
                 ? 'bg-white text-blue-700 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
@@ -719,6 +788,12 @@ export default function App() {
                 <span className="text-sm text-gray-600 font-medium">祝旅途愉快！</span>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'accommodation' && (
+          <div className="animate-fade-in">
+            <AccommodationList />
           </div>
         )}
         
