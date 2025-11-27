@@ -1,6 +1,22 @@
 
 import { DayPlan, ActivityType, DeploymentStep } from './types';
 
+// ==========================================
+// 🔥 FIREBASE 設定區 (請填入你的設定)
+// ==========================================
+// 1. 去 console.firebase.google.com 建立專案
+// 2. 建立 Web App 並複製 config
+// 3. 填入下方引號中 (如果是空的，APP 會自動使用「手機本機儲存」模式)
+export const FIREBASE_CONFIG = {
+  apiKey: "",             // 例如: "AIzaSyD..."
+  authDomain: "",         // 例如: "family-trip.firebaseapp.com"
+  projectId: "",          // 例如: "family-trip-2024"
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+// ==========================================
+
 export const TRIP_DATA: DayPlan[] = [
   {
     id: 1,
@@ -32,14 +48,14 @@ export const TRIP_DATA: DayPlan[] = [
           { title: "張美阿嬤農場", description: "三星鄉｜目前最紅！穿浴衣餵水豚、笑笑羊，環境乾淨。" },
           { title: "蜡藝蠟筆城堡", description: "蘇澳｜雨天備案首選，有很多色彩DIY，小孩會玩瘋。" }
         ],
-        location: "宜蘭張美阿嬤農場" // 預設導航點
+        location: "宜蘭張美阿嬤農場"
       },
       {
         time: "17:00",
         title: "飯店 Check-in",
         description: "建議住 礁溪 (泡溫泉) 或 宜蘭市/羅東。",
         type: ActivityType.Hotel,
-        location: "礁溪溫泉公園" // 示意導航點
+        location: "礁溪溫泉公園"
       },
       {
         time: "18:30",
@@ -234,26 +250,26 @@ export const TRIP_DATA: DayPlan[] = [
 export const DEPLOYMENT_STEPS: DeploymentStep[] = [
   {
     title: "1. 註冊 Vercel 帳號",
-    content: "前往 vercel.com，點擊 'Sign Up'。強烈建議選擇 'Continue with GitHub'，這樣可以直接連結你的儲存庫，最方便。"
+    content: "前往 vercel.com，使用 GitHub 登入，這樣最方便連結。"
   },
   {
-    title: "2. 新增專案 (Add New Project)",
-    content: "登入後，在 Dashboard 頁面點擊右側的 'Add New...' 按鈕，然後選擇 'Project'。"
+    title: "2. 申請 Firebase (為了同步記帳)",
+    content: "這一步是為了讓大家的手機記帳能同步。前往 console.firebase.google.com -> 建立專案 -> 建立 Web App -> 複製 Config -> 回到 constants.ts 填入 FIREBASE_CONFIG。"
   },
   {
-    title: "3. 匯入 Git 儲存庫",
-    content: "你會看到 'Import Git Repository' 的列表。找到你的專案 'family-trip-2024'，點擊旁邊的 'Import' 按鈕。"
+    title: "3. 設定 Firebase 資料庫",
+    content: "在 Firebase 控制台左側點 'Firestore Database' -> 建立資料庫 -> 選擇 '以測試模式啟動 (Start in test mode)' -> 位置選 asia-east1 (台灣) -> 完成。"
   },
   {
-    title: "4. 設定專案 (Configure Project)",
-    content: "Framework Preset (框架預設值)：Vercel 通常會自動偵測。如果沒有，請選擇 'Create React App' 或 'Vite' (因為我們是用 React)。Root Directory 保持預設即可。"
+    title: "4. 部署到 Vercel",
+    content: "回到 Vercel Dashboard -> Add New Project -> Import Git Repository -> 選擇你的 family-trip-2024 -> 點擊 Deploy。"
   },
   {
-    title: "5. 點擊 Deploy",
-    content: "點擊藍色的 'Deploy' 按鈕。Vercel 會開始自動建置你的網站，這大約需要 1-2 分鐘。"
+    title: "5. 手機安裝",
+    content: "部署完成後，用手機瀏覽器打開網址，選擇「分享」->「加入主畫面」，就能像 APP 一樣使用囉！"
   },
   {
-    title: "6. 完成與故障排除 (重要！)",
-    content: "如果打開網頁出現「登入畫面 (Vercel Authentication)」，請這樣做：回到 Vercel 專案設定 -> Settings -> Deployment Protection -> 將 'Vercel Authentication' 設為 Disabled (關閉) -> 點擊 Save。這樣家人就可以直接看到網頁囉！"
+    title: "疑難排解：需要登入？",
+    content: "如果打開網頁出現 Vercel 登入畫面，請到 Vercel 專案設定 -> Settings -> Deployment Protection -> 將 'Vercel Authentication' 設為 Disabled -> Save。"
   }
 ];
