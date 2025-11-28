@@ -48,7 +48,7 @@ export interface Expense {
   category: 'food' | 'transport' | 'stay' | 'play' | 'other';
   payer: string;
   date: string;
-  dateTimestamp?: number; // 用於排序
+  dateTimestamp?: number;
 }
 
 export interface Accommodation {
@@ -57,4 +57,19 @@ export interface Accommodation {
   name: string;
   location: string;
   note?: string;
+  checkIn?: string;  // e.g., "15:00"
+  checkOut?: string; // e.g., "11:00"
+  bookingId?: string; // 訂房代號
+}
+
+export interface PackingItem {
+  id: string;
+  text: string;
+  checked: boolean;
+}
+
+export interface PackingCategory {
+  id: string;
+  title: string;
+  items: PackingItem[];
 }
