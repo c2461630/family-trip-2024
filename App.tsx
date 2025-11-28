@@ -4,10 +4,11 @@ import {
   MapPin, Coffee, Car, Moon, Camera, Info, ExternalLink, 
   ChevronDown, ChevronUp, CheckCircle, Smartphone, Navigation,
   Sun, Cloud, CloudRain, Wind, Plus, Trash2, Wallet, PieChart,
-  CloudLightning, WifiOff, Pencil, Save, X, BedDouble
+  CloudLightning, WifiOff, Pencil, Save, X, BedDouble,
+  Luggage, CheckSquare, Square, Briefcase, Shirt, Plug, Baby, Pill, User
 } from 'lucide-react';
-import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG, ACCOMMODATION_DATA } from './constants';
-import { Activity, ActivityType, DayPlan, WeatherInfo, Expense, Accommodation } from './types';
+import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG, ACCOMMODATION_DATA, DEFAULT_PACKING_LIST } from './constants';
+import { Activity, ActivityType, DayPlan, WeatherInfo, Expense, Accommodation, PackingCategory } from './types';
 
 // We will load these dynamically to avoid build errors
 // import { initializeApp } from 'firebase/app';
@@ -188,6 +189,121 @@ const DayCard: React.FC<{ day: DayPlan }> = ({ day }) => {
   );
 };
 
+// --- Packing List Component ---
+
+const PackingListChecklist = () => {
+  const [list, setList] = useState<PackingCategory[]>(DEFAULT_PACKING_LIST);
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('packing_list_v2');
+    if (saved) {
+      try {
+        setList(JSON.parse(saved));
+      } catch (e) {
+        setList(DEFAULT_PACKING_LIST);
+      }
+    }
+  }, []);
+
+  const toggleItem = (categoryId: string, itemId: string) => {
+    const newList = list.map(cat => {
+      if (cat.id !== categoryId) return cat;
+      return {
+        ...cat,
+        items: cat.items.map(item => {
+          if (item.id !== itemId) return item;
+          return { ...item, checked: !item.checked };
+        })
+      };
+    });
+    setList(newList);
+    localStorage.setItem('packing_list_v2', JSON.stringify(newList));
+  };
+
+  const resetList = () => {
+    if (confirm("確定要重置所有勾選狀態嗎？")) {
+      setList(DEFAULT_PACKING_LIST);
+      localStorage.setItem('packing_list_v2', JSON.stringify(DEFAULT_PACKING_LIST));
+    }
+  };
+
+  const calculateProgress = () => {
+    let total = 0;
+    let checked = 0;
+    list.forEach(cat => {
+      cat.items.forEach(item => {
+        total++;
+        if (item.checked) checked++;
+      });
+    });
+    return total === 0 ? 0 : Math.round((checked / total) * 100);
+  };
+
+  const getCategoryIcon = (id: string) => {
+    switch (id) {
+      case 'docs': return <Briefcase className="w-5 h-5" />;
+      case 'clothes': return <Shirt className="w-5 h-5" />;
+      case 'tech': return <Plug className="w-5 h-5" />;
+      case 'toiletries': return <User className="w-5 h-5" />;
+      case 'kids': return <Baby className="w-5 h-5" />;
+      case 'meds': return <Pill className="w-5 h-5" />;
+      default: return <Luggage className="w-5 h-5" />;
+    }
+  };
+
+  const progress = calculateProgress();
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-6 text-white shadow-lg">
+        <div className="flex justify-between items-start">
+          <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+            <Luggage className="w-6 h-6" />
+            行李清單
+          </h2>
+          <button onClick={resetList} className="text-xs bg-white/20 px-2 py-1 rounded hover:bg-white/30">
+            重置
+          </button>
+        </div>
+        <p className="text-pink-100 opacity-90 mb-4 text-sm">
+          出發前檢查一下，什麼都別漏帶囉！
+        </p>
+        <div className="w-full bg-black/20 rounded-full h-2.5">
+          <div className="bg-white h-2.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+        </div>
+        <div className="text-right text-xs mt-1 font-bold">{progress}% 完成</div>
+      </div>
+
+      <div className="grid gap-4">
+        {list.map(category => (
+          <div key={category.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center gap-2 font-bold text-gray-700">
+              {getCategoryIcon(category.id)}
+              {category.title}
+            </div>
+            <div className="divide-y divide-gray-50">
+              {category.items.map(item => (
+                <div 
+                  key={item.id} 
+                  onClick={() => toggleItem(category.id, item.id)}
+                  className="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <div className={`flex-shrink-0 transition-colors ${item.checked ? 'text-green-500' : 'text-gray-300'}`}>
+                    {item.checked ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
+                  </div>
+                  <span className={`text-sm ${item.checked ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // --- Accommodation List Component ---
 
 const AccommodationList = () => {
@@ -233,6 +349,22 @@ const AccommodationList = () => {
             <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
               <MapPin className="w-4 h-4 text-gray-400" />
               <span>{item.location}</span>
+            </div>
+
+            {/* Detailed Info Grid */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-gray-50 p-2 rounded border border-gray-100">
+                <div className="text-gray-400 mb-0.5">入住/退房</div>
+                <div className="font-semibold text-gray-700">
+                  {item.checkIn || '15:00'} / {item.checkOut || '11:00'}
+                </div>
+              </div>
+              <div className="bg-gray-50 p-2 rounded border border-gray-100">
+                <div className="text-gray-400 mb-0.5">訂房代號</div>
+                <div className="font-semibold text-gray-700">
+                  {item.bookingId || '-'}
+                </div>
+              </div>
             </div>
             
             {item.note && (
@@ -447,6 +579,18 @@ const ExpenseTracker = () => {
 
   const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
 
+  // Statistics Calculation
+  const statsByCategory = expenses.reduce((acc, curr) => {
+    acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const statsByPayer = expenses.reduce((acc, curr) => {
+    acc[curr.payer] = (acc[curr.payer] || 0) + curr.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+
   const getCategoryLabel = (cat: string) => {
     const map: Record<string, string> = { food: '餐飲', transport: '交通', stay: '住宿', play: '娛樂', other: '其他' };
     return map[cat] || cat;
@@ -482,12 +626,37 @@ const ExpenseTracker = () => {
             </span>
           )}
         </div>
-        <div className="text-4xl font-bold">
+        <div className="text-4xl font-bold mb-4">
           ${totalAmount.toLocaleString()}
         </div>
-        {!isFirebaseMode && (
-          <div className="mt-2 text-xs opacity-75">
-            設定 Firebase 可開啟多人同步 (詳見教學)
+        
+        {/* Statistics Bars */}
+        {expenses.length > 0 && (
+          <div className="bg-black/10 rounded-xl p-3 backdrop-blur-sm text-xs space-y-3">
+             {/* Payer Stats */}
+             <div className="flex gap-2">
+               {Object.entries(statsByPayer).map(([payer, amount]) => (
+                  <div key={payer} className="flex-1 bg-white/20 rounded p-1.5 text-center">
+                    <div className="opacity-75 mb-0.5">{payer}</div>
+                    <div className="font-bold">${amount.toLocaleString()}</div>
+                  </div>
+               ))}
+             </div>
+             {/* Category Viz */}
+             <div className="flex h-2 rounded-full overflow-hidden bg-white/20">
+                {Object.entries(statsByCategory).map(([cat, amount], idx) => (
+                  <div 
+                    key={cat} 
+                    style={{ width: `${(amount / totalAmount) * 100}%` }}
+                    className={`h-full ${
+                      cat === 'food' ? 'bg-orange-300' :
+                      cat === 'transport' ? 'bg-blue-300' :
+                      cat === 'stay' ? 'bg-indigo-300' :
+                      cat === 'play' ? 'bg-green-300' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+             </div>
           </div>
         )}
       </div>
@@ -700,7 +869,7 @@ const ExpenseTracker = () => {
 // --- Main App Component ---
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'itinerary' | 'accommodation' | 'expense' | 'deploy'>('itinerary');
+  const [activeTab, setActiveTab] = useState<'itinerary' | 'accommodation' | 'packing' | 'expense' | 'deploy'>('itinerary');
 
   return (
     <div className="min-h-screen pb-12 max-w-md mx-auto sm:max-w-2xl bg-gray-50">
@@ -708,7 +877,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex justify-between items-start mb-3">
           <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-            Family Trip 2024 v2.0
+            Family Trip 2024 v3.0
           </h1>
           <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
             5 Days
@@ -716,7 +885,7 @@ export default function App() {
         </div>
         
         {/* Navigation Tabs */}
-        <div className="flex p-1 bg-gray-100 rounded-lg overflow-x-auto">
+        <div className="flex p-1 bg-gray-100 rounded-lg overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('itinerary')}
             className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
@@ -736,6 +905,16 @@ export default function App() {
             }`}
           >
             住宿
+          </button>
+          <button
+            onClick={() => setActiveTab('packing')}
+            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+              activeTab === 'packing' 
+                ? 'bg-white text-pink-700 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            行李
           </button>
           <button
             onClick={() => setActiveTab('expense')}
@@ -794,6 +973,12 @@ export default function App() {
         {activeTab === 'accommodation' && (
           <div className="animate-fade-in">
             <AccommodationList />
+          </div>
+        )}
+
+        {activeTab === 'packing' && (
+          <div className="animate-fade-in">
+            <PackingListChecklist />
           </div>
         )}
         
