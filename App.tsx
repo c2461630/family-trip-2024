@@ -915,7 +915,7 @@ export default function App() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex justify-between items-start mb-3">
           <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-            Family Trip 2024 v3.0
+            Family Trip 2025 v3.0
           </h1>
           <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
             5 Days
@@ -1035,3 +1035,4 @@ export default function App() {
     </div>
   );
 }
+
