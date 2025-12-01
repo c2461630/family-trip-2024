@@ -5,7 +5,8 @@ import {
   ChevronDown, ChevronUp, CheckCircle, Smartphone, Navigation,
   Sun, Cloud, CloudRain, Wind, Plus, Trash2, Wallet, PieChart,
   CloudLightning, WifiOff, Pencil, Save, X, BedDouble,
-  Luggage, CheckSquare, Square, Briefcase, Shirt, Plug, Baby, Pill, User, Map
+  Luggage, CheckSquare, Square, Briefcase, Shirt, Plug, Baby, Pill, User, Map,
+  Home, List
 } from 'lucide-react';
 import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG, ACCOMMODATION_DATA, DEFAULT_PACKING_LIST } from './constants';
 import { Activity, ActivityType, DayPlan, WeatherInfo, Expense, PackingCategory } from './types';
@@ -159,18 +160,18 @@ const DayCard: React.FC<{ day: DayPlan }> = ({ day }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer"
       >
-        <div className={`p-4 ${isOpen ? 'bg-blue-600' : 'bg-white'} transition-colors duration-300`}>
+        <div className={`p-4 ${isOpen ? 'bg-black text-white' : 'bg-white text-gray-900'} transition-colors duration-300`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg ${isOpen ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-700'}`}>
+              <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg ${isOpen ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'}`}>
                 <span className="text-xs font-medium uppercase">{day.weekday}</span>
                 <span className="text-lg font-bold">{day.date}</span>
               </div>
               <div className="text-left">
-                <h3 className={`font-bold text-lg ${isOpen ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`font-bold text-lg`}>
                   Day {day.id}
                 </h3>
-                <p className={`text-sm ${isOpen ? 'text-blue-100' : 'text-gray-500'}`}>
+                <p className={`text-sm ${isOpen ? 'text-gray-300' : 'text-gray-500'}`}>
                   {day.route}
                 </p>
               </div>
@@ -178,7 +179,7 @@ const DayCard: React.FC<{ day: DayPlan }> = ({ day }) => {
             
             <div className="flex items-center gap-3">
               {/* Weather Info */}
-              <div className={`flex flex-col items-end text-xs ${isOpen ? 'text-blue-100' : 'text-gray-500'}`}>
+              <div className={`flex flex-col items-end text-xs ${isOpen ? 'text-gray-300' : 'text-gray-500'}`}>
                 <div className="flex items-center gap-1">
                   <WeatherIcon type={day.weather.type} />
                   <span className="font-bold text-sm">{day.weather.temp}</span>
@@ -291,7 +292,7 @@ const PackingListChecklist = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-6 text-white shadow-lg">
+      <div className="bg-black text-white rounded-2xl p-6 shadow-lg">
         <div className="flex justify-between items-start">
           <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
             <Luggage className="w-6 h-6" />
@@ -301,10 +302,10 @@ const PackingListChecklist = () => {
             重置
           </button>
         </div>
-        <p className="text-pink-100 opacity-90 mb-4 text-sm">
+        <p className="text-gray-300 opacity-90 mb-4 text-sm">
           出發前檢查一下，什麼都別漏帶囉！
         </p>
-        <div className="w-full bg-black/20 rounded-full h-2.5">
+        <div className="w-full bg-white/20 rounded-full h-2.5">
           <div className="bg-white h-2.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
         </div>
         <div className="text-right text-xs mt-1 font-bold">{progress}% 完成</div>
@@ -909,130 +910,118 @@ const ExpenseTracker = () => {
 export default function App() {
   const [activeTab, setActiveTab] = useState<'itinerary' | 'accommodation' | 'packing' | 'expense' | 'deploy'>('itinerary');
 
+  const navItems = [
+    { id: 'itinerary', label: '行程', icon: MapPin },
+    { id: 'accommodation', label: '住宿', icon: BedDouble },
+    { id: 'packing', label: '行李', icon: Luggage },
+    { id: 'expense', label: '記帳', icon: Wallet },
+    { id: 'deploy', label: '教學', icon: ExternalLink },
+  ] as const;
+
   return (
-    <div className="min-h-screen pb-12 max-w-md mx-auto sm:max-w-2xl bg-gray-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
-        <div className="flex justify-between items-start mb-3">
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-            Family Trip 2025 v3.0
-          </h1>
-          <span className="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-            5 Days
-          </span>
-        </div>
+    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
+      {/* --- Left Sidebar Navigation --- */}
+      <aside className="w-[70px] md:w-64 bg-white border-r border-gray-200 flex flex-col justify-between flex-shrink-0 z-20 transition-all duration-300">
         
-        {/* Navigation Tabs */}
-        <div className="flex p-1 bg-gray-100 rounded-lg overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setActiveTab('itinerary')}
-            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-              activeTab === 'itinerary' 
-                ? 'bg-white text-gray-900 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            行程
-          </button>
-          <button
-            onClick={() => setActiveTab('accommodation')}
-            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-              activeTab === 'accommodation' 
-                ? 'bg-white text-indigo-700 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            住宿
-          </button>
-          <button
-            onClick={() => setActiveTab('packing')}
-            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-              activeTab === 'packing' 
-                ? 'bg-white text-pink-700 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            行李
-          </button>
-          <button
-            onClick={() => setActiveTab('expense')}
-            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-              activeTab === 'expense' 
-                ? 'bg-white text-emerald-700 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            記帳
-          </button>
-          <button
-            onClick={() => setActiveTab('deploy')}
-            className={`flex-1 py-2 px-2 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-              activeTab === 'deploy' 
-                ? 'bg-white text-blue-700 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            教學
-          </button>
+        {/* Logo / Title Area */}
+        <div className="p-4 md:p-6 flex items-center justify-center md:justify-start gap-3">
+           <div className="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center font-bold shadow-md">
+             FT
+           </div>
+           <div className="hidden md:block">
+             <h1 className="font-bold text-lg leading-none tracking-tight">Trip 2025</h1>
+             <span className="text-xs text-gray-400 font-medium">v3.0</span>
+           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="px-4 py-6">
-        {activeTab === 'itinerary' && (
-          <div className="animate-fade-in">
-            <div className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">山海親子慢活之旅</h2>
-                  <p className="text-blue-100 text-sm opacity-90">
-                    台南 ➔ 宜蘭 ➔ 花蓮 ➔ 台東 ➔ 溫暖的家
-                  </p>
+        {/* Navigation Items */}
+        <nav className="flex-1 px-2 md:px-4 py-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 group ${
+                activeTab === item.id
+                  ? 'bg-black text-white shadow-lg shadow-black/10'
+                  : 'text-gray-500 hover:bg-gray-100'
+              } justify-center md:justify-start`}
+              title={item.label}
+            >
+              <item.icon className={`w-6 h-6 flex-shrink-0 ${activeTab === item.id ? 'text-white' : 'text-gray-500 group-hover:text-gray-900'}`} />
+              <span className="hidden md:block font-medium tracking-wide">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        {/* Bottom Area (e.g., Status) */}
+        <div className="p-4 border-t border-gray-100 hidden md:block">
+           <div className="bg-gray-50 rounded-xl p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                TW
+              </div>
+              <div className="text-xs">
+                <div className="font-bold text-gray-900">Family Trip</div>
+                <div className="text-gray-400">5 Days Left</div>
+              </div>
+           </div>
+        </div>
+      </aside>
+
+      {/* --- Main Content Area --- */}
+      <main className="flex-1 overflow-y-auto relative scroll-smooth">
+        <div className="max-w-3xl mx-auto px-4 py-8 md:px-8 md:py-10 pb-24">
+          
+          {/* Dynamic Content Rendering */}
+          {activeTab === 'itinerary' && (
+            <div className="animate-fade-in space-y-6">
+              <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">山海親子慢活之旅</h2>
+                <div className="flex items-center gap-2 text-gray-500 text-sm">
+                  <Map className="w-4 h-4" />
+                  <span>台南 ➔ 宜蘭 ➔ 花蓮 ➔ 台東</span>
                 </div>
-                <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                  <MapPin className="w-6 h-6 text-white" />
+              </div>
+
+              <div className="space-y-6">
+                {TRIP_DATA.map((day) => (
+                  <DayCard key={day.id} day={day} />
+                ))}
+              </div>
+
+              <div className="text-center mt-12 mb-8">
+                <div className="inline-flex items-center justify-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
+                  <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                  <span className="text-sm text-gray-600 font-medium">祝旅途愉快！</span>
                 </div>
               </div>
             </div>
+          )}
 
-            {TRIP_DATA.map((day) => (
-              <DayCard key={day.id} day={day} />
-            ))}
-            
-            <div className="text-center mt-12 mb-8">
-              <div className="inline-flex items-center justify-center p-3 bg-white rounded-full shadow-sm border border-gray-100">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                <span className="text-sm text-gray-600 font-medium">祝旅途愉快！</span>
-              </div>
+          {activeTab === 'accommodation' && (
+            <div className="animate-fade-in">
+              <AccommodationList />
             </div>
-          </div>
-        )}
+          )}
 
-        {activeTab === 'accommodation' && (
-          <div className="animate-fade-in">
-            <AccommodationList />
-          </div>
-        )}
+          {activeTab === 'packing' && (
+            <div className="animate-fade-in">
+              <PackingListChecklist />
+            </div>
+          )}
+          
+          {activeTab === 'expense' && (
+            <div className="animate-fade-in">
+              <ExpenseTracker />
+            </div>
+          )}
 
-        {activeTab === 'packing' && (
-          <div className="animate-fade-in">
-            <PackingListChecklist />
-          </div>
-        )}
-        
-        {activeTab === 'expense' && (
-          <div className="animate-fade-in">
-            <ExpenseTracker />
-          </div>
-        )}
-
-        {activeTab === 'deploy' && (
-          <div className="animate-fade-in">
-            <DeploymentGuide />
-          </div>
-        )}
+          {activeTab === 'deploy' && (
+            <div className="animate-fade-in">
+              <DeploymentGuide />
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
 }
-
