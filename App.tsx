@@ -5,8 +5,7 @@ import {
   ChevronDown, ChevronUp, CheckCircle, Smartphone, Navigation,
   Sun, Cloud, CloudRain, Wind, Plus, Trash2, Wallet, PieChart,
   CloudLightning, WifiOff, Pencil, Save, X, BedDouble,
-  Luggage, CheckSquare, Square, Briefcase, Shirt, Plug, Baby, Pill, User, Map,
-  Home, List
+  Luggage, CheckSquare, Square, Briefcase, Shirt, Plug, Baby, Pill, User, Map
 } from 'lucide-react';
 import { TRIP_DATA, DEPLOYMENT_STEPS, FIREBASE_CONFIG, ACCOMMODATION_DATA, DEFAULT_PACKING_LIST } from './constants';
 import { Activity, ActivityType, DayPlan, WeatherInfo, Expense, PackingCategory } from './types';
@@ -356,7 +355,7 @@ const AccommodationList = () => {
           <BedDouble className="w-6 h-6" />
           住宿資訊
         </h2>
-        <p className="text-indigo-50 opacity-90">
+        <p className="text-indigo-5 opacity-90">
           四個晚上的落腳處，點擊導航可直接前往。
         </p>
       </div>
